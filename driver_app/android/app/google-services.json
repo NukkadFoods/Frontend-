@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "170641463923",
+    "project_id": "nukkad-foods",
+    "storage_bucket": "nukkad-foods.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170641463923:android:41cf2b738397d138dd2806",
+        "android_client_info": {
+          "package_name": "com.nukkadfoods.delivery_partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxPQ4tRDb5YUqdx2MiqFg9Dx2AzZ0cuuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170641463923:android:d9fbf32d5927d4d6dd2806",
+        "android_client_info": {
+          "package_name": "com.nukkadfoods.delivery_partner_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxPQ4tRDb5YUqdx2MiqFg9Dx2AzZ0cuuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170641463923:android:65c5f09b6ca41408dd2806",
+        "android_client_info": {
+          "package_name": "com.nukkadfoods.nukkad_foods"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxPQ4tRDb5YUqdx2MiqFg9Dx2AzZ0cuuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170641463923:android:bedcf775df26b975dd2806",
+        "android_client_info": {
+          "package_name": "com.nukkadfoods.nukkad_foods_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxPQ4tRDb5YUqdx2MiqFg9Dx2AzZ0cuuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170641463923:android:5765bb65af000e52dd2806",
+        "android_client_info": {
+          "package_name": "com.nukkadfoods.nukkad_partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxPQ4tRDb5YUqdx2MiqFg9Dx2AzZ0cuuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
