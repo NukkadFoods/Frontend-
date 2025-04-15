@@ -100,11 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     isSearching =
                         DutyController.isOnDuty; // Toggle the duty status
                     if (DutyController.isOnDuty) {
-                      if (streamInitialized &&
-                          (await OrderController.streamRef.get())
-                              .get('orders')
-                              .isEmpty) {
-                        Toast.showToast(message: "Starting Duty...");
+                      if (streamInitialized) {
                         getUnassignedOrders();
                         await DutyController.startDuty(context);
                       }
@@ -152,6 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         in snapshot.data!.data()!['orders']) {
                       if (item['accepted'] == null) {
                         orders.add(OrderData.fromJson(item));
+                      } else if (item['accepted'] == true) {
+                        Toast.showToast(
+                            message:
+                                "You already have an active order. Please check ongoing orders.");
                       }
                     }
                   }

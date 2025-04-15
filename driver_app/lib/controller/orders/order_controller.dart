@@ -76,8 +76,10 @@ class OrderController {
 
   static void declineOrder(OrderData orderData) async {
     final orders = await streamRef.get();
+    Map? orderJson;
     for (var order in orders.get('orders')) {
       if (order['orderId'] == orderData.orderId) {
+        orderJson = order;
         streamRef.update({
           'orders': FieldValue.arrayRemove([order])
         }).onError((e, _) {
@@ -86,14 +88,17 @@ class OrderController {
         break;
       }
     }
-    orderData.accepted = false;
-    db.collection('dboys').doc(phoneNumber).update({
-      'isBusy': true,
-      'orders': FieldValue.arrayUnion([orderData.toJson()]),
-      // 'declined': FieldValue.arrayUnion([orderData.orderId])
-    }).onError((e, _) {
-      log(e.toString());
-    });
+    // orderData.accepted = false;
+    if (orderJson != null) {
+      orderJson['accepted'] = false;
+      db.collection('dboys').doc(phoneNumber).update({
+        'isBusy': true,
+        'orders': FieldValue.arrayUnion([orderJson]),
+        // 'declined': FieldValue.arrayUnion([orderData.orderId])
+      }).onError((e, _) {
+        log(e.toString());
+      });
+    }
   }
 
   static Future<bool> acceptUnassignedOrder(OrderData orderData) async {
@@ -264,7 +269,7 @@ class DutyController {
     if (myHubs.isEmpty && context.mounted) {
       final updated = await showDialog(
           context: context, builder: (context) => selectNewCityPrompt(context));
-      if (updated) {
+      if (updated == true) {
         final updated = await Navigator.of(context)
             .push(transitionToNextScreen(const WorkPreferenceScreen(
           isRegistering: false,

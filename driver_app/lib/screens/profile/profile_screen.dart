@@ -312,6 +312,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                         prefs.clear();
                         prefs.setBool('isFirstLaunch', false);
                         FirebaseAuth.instance.signOut();
+                        WalletController.uid = '';
                         Navigator.of(context).pushAndRemoveUntil(
                             transitionToNextScreen(const SignInScreen()),
                             (_) => false);

@@ -413,7 +413,7 @@ class _NukkadSettingWidgetState extends State<NukkadSettingWidget> {
                             Map<String, dynamic> updateData = {
                               'nukkadName': ownerNameController.text,
                               'nukkadAddress': nukkadAddressController.text,
-                              'phoneNumber': nukkadphoneController.text
+                              'phoneNumber': "+91${nukkadphoneController.text}"
                             };
                             if (newLocation != null) {
                               updateData['latitude'] = newLocation!.latitude;

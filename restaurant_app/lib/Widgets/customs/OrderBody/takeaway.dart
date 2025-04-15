@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:http/http.dart';
 import 'package:restaurant_app/Controller/earnings_controller.dart';
+import 'package:restaurant_app/Controller/notification.dart';
 import 'package:restaurant_app/Controller/order/orders_model.dart';
 import 'package:restaurant_app/Controller/wallet_controller.dart';
 import 'package:restaurant_app/Widgets/constants/colors.dart';
+import 'package:restaurant_app/Widgets/constants/shared_preferences.dart';
 import 'package:restaurant_app/Widgets/constants/strings.dart';
 import 'package:restaurant_app/Widgets/toast.dart';
 import 'package:sizer/sizer.dart';
@@ -85,6 +87,14 @@ class _TakeawayScreenState extends State<TakeawayScreen> {
                       .doc(widget.orderData.orderId),
                   {'status': "On the way", 'pickedup': true});
             });
+            final restaurantName = jsonDecode(SharedPrefsUtil()
+                .getString(AppStrings.restaurantModel)!)['user']['nukkadName'];
+            NotificationService.sendNotification(
+                toUid: widget.orderData.orderByid!,
+                toApp: "user",
+                title: "Order on the way",
+                body:
+                    "Your order from ${restaurantName ?? ''} is heading to you!");
             Navigator.of(context).pop(true);
           }
         }

@@ -54,24 +54,22 @@ Widget restaurant({
   bool isHidden = false,
   NavigatorState? navigator,
 }) {
-    bool isdarkmode = Theme.of(context).brightness == Brightness.dark;
+  bool isdarkmode = Theme.of(context).brightness == Brightness.dark;
   final distance = calculateDistance(
     userLat,
     userLng,
     restaurantModel.latitude ?? 0,
     restaurantModel.longitude ?? 0,
   );
-  final travelTime = estimateTravelTime(distance);
+  final travelTime = estimateTravelTime(distance,
+      timeToAddInMins: (restaurantModel.timetoprepare ?? 0).toInt());
   void favouriteHandler() async {
     if (isFavourite) {
       var result = await FavoriteController.removeFavorite(
           uid: SharedPrefsUtil().getString(AppStrings.userId) ?? "",
           favorite: restaurantModel.id!);
       result.fold((String error) {}, (String success) {
-        Fluttertoast.showToast(
-            msg: ' $success',
-           
-            textColor: colorSuccess);
+        Fluttertoast.showToast(msg: ' $success', textColor: colorSuccess);
       });
     } else {
       var result = await FavoriteController.addFavorite(
@@ -79,9 +77,7 @@ Widget restaurant({
           favorite: restaurantModel.id!);
       result.fold((String error) {
         Fluttertoast.showToast(
-            msg: 'Something went wrong ...!',
-           
-            textColor: primaryColor);
+            msg: 'Something went wrong ...!', textColor: primaryColor);
       }, (String success) {
         isFavourite = !isFavourite;
 
@@ -105,7 +101,6 @@ Widget restaurant({
     child: Container(
       margin: EdgeInsets.only(bottom: 2.h),
       child: Material(
-     
         elevation: 5,
         borderRadius: BorderRadius.circular(10),
         child: Container(
@@ -195,7 +190,9 @@ Widget restaurant({
                           alignment: AlignmentDirectional.bottomStart,
                           child: Text(
                             "${restaurantModel.nukkadName!}${restaurantModel.isOpen! ? "" : " (Closed)"}",
-                            style: h5TextStyle.copyWith(fontSize: 13.sp,color: isdarkmode ?textGrey2 :textBlack),
+                            style: h5TextStyle.copyWith(
+                                fontSize: 13.sp,
+                                color: isdarkmode ? textGrey2 : textBlack),
                             maxLines: 1,
                             textAlign: TextAlign.start,
                             overflow: TextOverflow.ellipsis,
@@ -256,12 +253,14 @@ Widget restaurant({
                           SvgPicture.asset(
                             'assets/icons/dot.svg',
                             height: 2.h,
-                            color:isdarkmode ? textWhite : textGrey1,
+                            color: isdarkmode ? textWhite : textGrey1,
                           ),
                           Expanded(
                             child: Text(
                               distance,
-                              style: body6TextStyle.copyWith(color:isdarkmode ? textWhite : textGrey1,),
+                              style: body6TextStyle.copyWith(
+                                color: isdarkmode ? textWhite : textGrey1,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

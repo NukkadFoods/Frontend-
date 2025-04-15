@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:driver_app/controller/earnings/earnings_controller.dart';
+import 'package:driver_app/controller/notification.dart';
 import 'package:driver_app/controller/orders/order_controller.dart';
 import 'package:driver_app/controller/orders/orders_model.dart';
 import 'package:driver_app/controller/toast.dart';
@@ -103,25 +103,7 @@ class DeliveryProvider extends ChangeNotifier {
                       .doc('streakRecord'),
                   {orderData.orderByid!: orderData.date!.substring(0, 10)});
               //Sending notification to restaurant
-              try {
-                final sendNotification = FirebaseFunctions.instance
-                    .httpsCallable('sendNotification');
-                sendNotification.call({
-                  "uid": orderData.orderByid,
-                  "toApp": "user",
-                  "title": "Yay! Foodie Reward Received",
-                  "body":
-                      "Foodie Reward of ₹ ${orderData.billingDetail!['foodieReward']} has been credited to wallet!",
-                  "data": {
-                    "orderId": orderData.orderId,
-                  },
-                  "channel": "orders"
-                });
-              } catch (e) {
-                if (kDebugMode) {
-                  print(e);
-                }
-              }
+              sendNotifications(orderData);
             }
             transaction.update(
                 FirebaseFirestore.instance
@@ -287,5 +269,27 @@ class DeliveryProvider extends ChangeNotifier {
       }
     }
     print("compute completed");
+  }
+
+  Future<void> sendNotifications(OrderData orderData) async {
+    NotificationService.sendNotification(
+      toUid: orderData.orderByid!,
+      toApp: 'user',
+      title: "Yay! Foodie Reward Received",
+      body:
+          "Foodie Reward of ₹ ${orderData.billingDetail!['foodieReward']} has been credited to wallet!",
+      data: {
+        "orderId": orderData.orderId,
+      },
+    );
+
+    NotificationService.sendNotification(
+        toUid: orderData.restaurantuid!, toApp: "restaurant");
+    NotificationService.sendNotification(
+        toUid: orderData.orderByid!,
+        toApp: "user",
+        title: "Order Delivered",
+        body: "Your order from ${restaurant.nukkadName ?? ""} has delivered.",
+        data: {"orderId": orderData.orderId});
   }
 }

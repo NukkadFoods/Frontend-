@@ -11,6 +11,7 @@ import 'package:driver_app/widgets/common/loading_popup.dart';
 import 'package:driver_app/widgets/common/transition_to_next_screen.dart';
 import 'package:driver_app/widgets/constants/shared_preferences.dart';
 import 'package:driver_app/widgets/constants/strings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -175,8 +176,6 @@ class _WorkPreferenceScreenTwoState extends State<WorkPreferenceScreenTwo> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        print(response.statusCode);
-        print(response.statusCode);
         if (responseData['executed']) {
           print("Delivery boy added successfully");
           FirebaseFirestore.instance
@@ -185,6 +184,7 @@ class _WorkPreferenceScreenTwoState extends State<WorkPreferenceScreenTwo> {
               .set({'isBusy': false, 'status': false, 'orders': []});
           WalletController.createWallet(contact!, '$firstName $lastName')
               .then((uid) {
+            updateInHub(uid: uid, oldHub: locationName!, newHub: locationName);
             EarningsController.createEarning(uid);
             completeReferral(uid);
           });
@@ -222,6 +222,7 @@ class _WorkPreferenceScreenTwoState extends State<WorkPreferenceScreenTwo> {
     // Parse the JSON string into a Map
     Map<String, dynamic> userInfo =
         userInfoStr != null ? jsonDecode(userInfoStr) : {};
+    print(userInfo['locationName']);
     // final baseUrl = dotenv.env['BASE_URL']!;
     final baseUrl = AppStrings.baseURL;
     Map<String, dynamic> data = {
@@ -257,12 +258,18 @@ class _WorkPreferenceScreenTwoState extends State<WorkPreferenceScreenTwo> {
       //   Map data = jsonDecode(response.body);
       //   uid = data['uid'];
       // }
+      final String oldhub =
+          jsonDecode(prefs.getString('deliveryBoyData')!)['workPreference'][0]
+                  ['locationName'] ??
+              "";
       final response = await http.post(
           Uri.parse('$baseUrl/auth/updateDeliveryBoyById'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'id': uid, 'updateData': data}));
       Navigator.of(context).pop();
       if (response.statusCode == 200) {
+        await updateInHub(
+            uid: uid, oldHub: oldhub, newHub: userInfo['locationName']);
         var temp = jsonDecode(response.body);
         userInfo = temp['deliveryBoy'];
         print(userInfo);
@@ -280,6 +287,31 @@ class _WorkPreferenceScreenTwoState extends State<WorkPreferenceScreenTwo> {
       }
       return false;
     }
+  }
+
+  Future<void> updateInHub({
+    required String uid,
+    required String oldHub,
+    required String newHub,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('hubs')
+          .doc(oldHub.toLowerCase())
+          .update({
+        "drivers": FieldValue.arrayRemove([uid])
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    await FirebaseFirestore.instance
+        .collection('hubs')
+        .doc(newHub.toLowerCase())
+        .update({
+      "drivers": FieldValue.arrayUnion([uid])
+    });
   }
 
   Future<void> saveUserInfoKeyValue(String key, dynamic value) async {

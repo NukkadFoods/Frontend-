@@ -16,15 +16,18 @@ const admin = require("firebase-admin");
 const math = require("mathjs");
 
 admin.initializeApp();
-const { allocateOrder } = require("./allocation");
+const { allocateOrder, notify } = require("./allocation");
 
 function nukkad(Ov, dist, prep, delv, prem, surge, surgetype) {
   if (dist < 0.8) dist = 0.8;
 
   let longdistanceCharge = 0;
-  if (dist > 8) longdistanceCharge = (math.pow(dist, 1.23) / 1.2) - 4;
+  if (dist > 5) {
+    longdistanceCharge = 2 * (pow(dist, 1.23) / 1.2);
+    prem = "no";
+  }
 
-  let Ddist = 0.57 * math.pow(math.log(13 * dist), 2.53);
+  let Ddist = 0.69 * math.pow(math.log(13 * dist), 2.53);
 
   let Ncp;
   if (Ov <= 300) {
@@ -34,7 +37,7 @@ function nukkad(Ov, dist, prep, delv, prem, surge, surgetype) {
   }
   if (Ov >= 900)
     Ncp = 17.2;
-  Ncp = math.max(math.min(Ncp, 23), 17.2);
+  Ncp = math.max(math.min(Ncp, 24.0), 18.0);
   const Nc = (Ov / 100) * Ncp;
 
   let Dov;
@@ -59,7 +62,7 @@ function nukkad(Ov, dist, prep, delv, prem, surge, surgetype) {
   }
 
   const handlingCharges = Ov < 300 ? 1.8 * math.pow(math.log(Ov / 17), 1.58) : math.pow(1.8 * math.pow(math.log(Ov / 15), 1.69), 1.2);
-  const packingCharges = Ov >= 300 ? 6 * (Ov / 200) : 7 * (Ov / 200);
+  const packingCharges = Ov >= 300 ? 7 * (Ov / 200) : 8 * (Ov / 200);
 
   let Ccoins = 0; let DGcoins = 0; let Ncoins = 0;
 
@@ -77,52 +80,51 @@ function nukkad(Ov, dist, prep, delv, prem, surge, surgetype) {
   }
   let Rcoins = Ccoins;
 
-
   let UsableCash = Ov > 100 ? (Ov / 100) * (4 + (12 / 4) * math.pow(math.log(Ov / 18), 0.72)) : (Ov / 100) * (5 + (12 / 4) * math.pow(math.log(Ov / 18), 0.89));
   let Rov = Dov, Rdist = Ddist, RhandlingCharges = handlingCharges;
   if (DGcoins > 22) DGcoins = 22;
 
-  const Cgst = 5 * (Ov - UsableCash) / 100;
-
-  if (prem === "yes" && Ov >= 169) {
+  if (prem === "yes" && Ov >= 199) {
     Dov = 0;
     Ddist = 0;
     UsableCash = (Ov / 100) * (5 + (12 / 4) * math.pow(math.log(Ov / 18), 0.87));
     Ccoins += 50 * Ccoins / 100;
   }
 
-  if (prem === "yes") {
+  if (prem === "yes" && Ov < 199) {
     UsableCash = (Ov / 100) * (7 + (12 / 4) * math.pow(math.log(Ov / 18), 0.99));
     Ccoins += 50 * Ccoins / 100;
   }
 
-  if (prem === "no" && Ov >= 199) {
+  if (prem === "no" && Ov >= 229) {
     Dov = 0;
     Ddist = 0;
   }
 
   if (UsableCash > 50) UsableCash = 50;
+  const Cgst = 5 * (Ov - UsableCash) / 100;
+
+  let shortvalueOrder = 5 + 14 * math.exp((70 - Ov) / 100);
+  if (Ov >= 200) shortvalueOrder = 0;
 
   let dc = 0; let dwc = 0;
   if (Ov >= 300) {
-    dc = 50 * (Rov + RhandlingCharges) / 100 + 1.1 * Rdist + surgeCharge;
-    dwc = 30 * DGcoins / 100;
+    dc = 65 * (RhandlingCharges) / 100 + 0.35 * Rov + surgeCharge + 0.90 * (shortvalueOrder + longdistanceCharge);
+    dwc = 32 * DGcoins / 100;
   } else {
-    dc = 60 * (Rov + RhandlingCharges) / 100 + 1.2 * Rdist + surgeCharge;
-    dwc = 40 * DGcoins / 100;
+    dc = 72 * (RhandlingCharges) / 100 + 0.38 * Rov + surgeCharge + 0.90 * (shortvalueOrder + longdistanceCharge);
+    dwc = 34 * DGcoins / 100;
   }
 
-  const np = (Nc - UsableCash) + (Dov + Ddist + handlingCharges + packingCharges + surgeCharge) - dc - (DGcoins - dwc);
+  const np = (Nc - UsableCash) + (Dov + Ddist + handlingCharges + packingCharges + surgeCharge + shortvalueOrder + longdistanceCharge) - dc - (dwc);
 
   let epd = 0;
   //if (np > 38) epd = 16 * (np - 32) / 100;
   //if (epd < 5) epd = 0;
 
-  let Ngst = 18 * ((Nc - UsableCash) + (Dov + Ddist + handlingCharges + packingCharges + surgeCharge) - dc - (DGcoins - dwc) - 4 * epd) / 100;
-  if (Ngst < 0) Ngst = 0;
+  let Ngst = 18 * (np) / 100;
+  if (np < 0) Ngst = 0;
 
-  let shortvalueOrder = 5 + 14 * math.exp((70 - Ov) / 100) + 2 * math.pow(dist, 0.89);
-  if (Ov >= 200) shortvalueOrder = 0;
   const total = Ov + Dov + Ddist + Cgst + handlingCharges + packingCharges + surgeCharge + shortvalueOrder + longdistanceCharge;
   return {
     order_value: Ov,
@@ -172,7 +174,6 @@ exports.calculate = functions.https.onCall(async (request, response) => {
 
 exports.allocate = functions.https.onCall(async (request, response) => {
   const { order, restaurant, hubId, user } = request.data;
-  console.log(hubId);
   try {
     await allocateOrder(order, restaurant, hubId, user);
   } catch (error) {
@@ -190,42 +191,5 @@ exports.allocate = functions.https.onCall(async (request, response) => {
 
 exports.sendNotification = functions.https.onCall(async (request, response) => {
   const { uid, title, body, data, channel, toApp } = request.data;
-  if (uid === undefined || uid === null) {
-    return { "error": "Invalid Token" };
-  }
-
-  let token;
-
-  let fcmTokens = (await admin.firestore().collection('fcmTokens').doc(toApp).get()).data();
-
-  token = fcmTokens[uid];
-
-  if (token === undefined || token === null) {
-    return { "error": "Invalid Token" };
-  }
-
-  const payload = {
-    notification: {
-      title: title,
-      body: body,
-    },
-    data: data,
-    android: {
-      notification: {
-        channelId: channel,
-        priority: 'high'
-      },
-    },
-  };
-
-  try {
-    let result = await admin.messaging().send({
-      token: token,
-      ...payload,
-    });
-  } catch (error) {
-    return { "error": error.toString() };
-  }
-
-  return result;
+  return await notify(uid, title, body, data, channel, toApp);
 });

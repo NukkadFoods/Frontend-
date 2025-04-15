@@ -2,15 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driver_app/controller/notification.dart';
 import 'package:driver_app/controller/orders/orders_model.dart';
 import 'package:driver_app/widgets/constants/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:http/http.dart' as http;
 
 import '../controller/toast.dart';
 
 class LiveTaskProvider extends ChangeNotifier {
-  LiveTaskProvider(this.orderData) {
+  LiveTaskProvider(this.orderData, this.userLocation) {
     getUserPhonenumber(orderData.orderByid!);
     initTimer();
   }
@@ -26,6 +29,7 @@ class LiveTaskProvider extends ChangeNotifier {
   String? deliveryInstruction;
   int unreadByDriver = 0;
   bool isLoading = true;
+  LatLng userLocation;
 
   //functions
   void getUserPhonenumber(String uid) async {
@@ -92,5 +96,20 @@ class LiveTaskProvider extends ChangeNotifier {
                 orderData.date!.substring(0, orderData.date!.length - 1)))
             .inSeconds);
     notifyListeners();
+  }
+
+  void sendReachedNotification() async {
+    final position = await Geolocator.getCurrentPosition();
+    if (Geolocator.distanceBetween(position.latitude, position.longitude,
+            userLocation.latitude, userLocation.longitude) <
+        200) {
+      NotificationService.sendNotification(
+        toUid: orderData.orderByid!,
+        toApp: "user",
+        title: "Your order is almost there!",
+        body:
+            "Our delivery partner is nearby and will deliver your order shortly.",
+      );
+    }
   }
 }

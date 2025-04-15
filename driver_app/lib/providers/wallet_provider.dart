@@ -65,81 +65,132 @@ class WalletProvider extends ChangeNotifier {
         length, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
   }
 
-  // Future<bool> credit(double amount) async {
-  //   bool status = await WalletController.credit(amount);
-  //   if (status) {
-  //     balance = WalletController.wallet!.amount!;
-  //     notifyListeners();
-  //   }
-  //   return status;
-  // }
+  void test() async {}
 
-  // Future<bool> debit(double amount) async {
-  //   bool status = await WalletController.debit(amount);
-  //   if (status) {
-  //     balance = WalletController.wallet!.amount!;
-  //     notifyListeners();
+  // void test() async {
+  //   /*FirebaseFirestore.instance.collection('dboys').doc('8828767828').update({
+  //     "orders": [
+  //       {
+  //         "accepted": true,
+  //         "orderId": "2803256733742-69299",
+  //         "Restaurantuid": "67d001580d2f2917e8ff2bf4",
+  //         "cookingDescription": "No request",
+  //         "drivertip": 0,
+  //         "couponcode": "no code",
+  //         "date": "2025-03-28T12:55:21.406Z",
+  //         "time": "12:55 PM",
+  //         "paymentMethod": "Paid online",
+  //         "totalCost": 217.07,
+  //         "gst": 7.7,
+  //         "itemAmount": 170,
+  //         "deliveryCharge": 14.91,
+  //         "convinenceFee": 12.67,
+  //         "orderByid": "67e64892023949df359da8c8",
+  //         "orderByName": "Gaurav",
+  //         "status": "Pending",
+  //         "deliveryAddress": "hdkbdd, bdha, bdha ,bdha",
+  //         "items": [
+  //           {
+  //             "itemId": "67d0015Schezwan Noodles",
+  //             "itemName": "Schezwan Noodles",
+  //             "itemQuantity": 1,
+  //             "unitCost": 170,
+  //             "_id": "67e64eee924b660d336ac80f"
+  //           }
+  //         ],
+  //         "timetoprepare": "2025-03-28 13:09:27.328652",
+  //         "ordertype": "Delivery",
+  //         "billingDetail": {
+  //           "surge": 0,
+  //           "delivery_boy_wallet_cash": 4.41,
+  //           "shortValueOrder": 11.79,
+  //           "gst": 7.7,
+  //           "total_delivery_boy_earning": 35.67,
+  //           "dov": 10,
+  //           "dDist": 4.91,
+  //           "nukkad_earning": 131.22,
+  //           "usable_wallet_cash": 15.93,
+  //           "customer_wallet_cash_earned": 0,
+  //           "nukkad_wallet_cash": 10.86,
+  //           "delivery_fee": 14.91,
+  //           "total": 217.07,
+  //           "nukkadfoods_comission": 38.78,
+  //           "expectedPrep": "2025-03-28T13:09:27.323239",
+  //           "handling_charges": 6.72,
+  //           "delivery_boy_earning": 31.26,
+  //           "longDistanceCharge": 0,
+  //           "packing_charges": 5.95,
+  //           "order_value": 170,
+  //           "lateDelivery": true
+  //         },
+  //       }
+  //     ]
+  //   });*/
+
+  //   try {
+  //     final allocate = FirebaseFunctions.instance.httpsCallable("allocate");
+  //     final map = {
+  //       "orderId": "2803256733742-69299",
+  //       "Restaurantuid": "67d001580d2f2917e8ff2bf4",
+  //       "cookingDescription": "No request",
+  //       "drivertip": 0,
+  //       "couponcode": "no code",
+  //       "date": "2025-03-28T12:55:21.406Z",
+  //       "time": "12:55 PM",
+  //       "paymentMethod": "Paid online",
+  //       "totalCost": 217.07,
+  //       "gst": 7.7,
+  //       "itemAmount": 170,
+  //       "deliveryCharge": 14.91,
+  //       "convinenceFee": 12.67,
+  //       "orderByid": "67e64892023949df359da8c8",
+  //       "orderByName": "Gaurav",
+  //       "status": "Pending",
+  //       "deliveryAddress": "hdkbdd, bdha, bdha ,bdha",
+  //       "items": [
+  //         {
+  //           "itemId": "67d0015Schezwan Noodles",
+  //           "itemName": "Schezwan Noodles",
+  //           "itemQuantity": 1,
+  //           "unitCost": 170,
+  //           "_id": "67e64eee924b660d336ac80f"
+  //         }
+  //       ],
+  //       "timetoprepare": "2025-03-28 13:09:27.328652",
+  //       "ordertype": "Delivery",
+  //       "billingDetail": {
+  //         "surge": 0,
+  //         "delivery_boy_wallet_cash": 4.41,
+  //         "shortValueOrder": 11.79,
+  //         "gst": 7.7,
+  //         "total_delivery_boy_earning": 35.67,
+  //         "dov": 10,
+  //         "dDist": 4.91,
+  //         "nukkad_earning": 131.22,
+  //         "usable_wallet_cash": 15.93,
+  //         "customer_wallet_cash_earned": 0,
+  //         "nukkad_wallet_cash": 10.86,
+  //         "delivery_fee": 14.91,
+  //         "total": 217.07,
+  //         "nukkadfoods_comission": 38.78,
+  //         "expectedPrep": "2025-03-28T13:09:27.323239",
+  //         "handling_charges": 6.72,
+  //         "delivery_boy_earning": 31.26,
+  //         "longDistanceCharge": 0,
+  //         "packing_charges": 5.95,
+  //         "order_value": 170,
+  //         "lateDelivery": true
+  //       },
+  //     };
+  //     map['accepted'] = false;
+  //     allocate.call({
+  //       'order': map,
+  //       "restaurant": {'lat': 29.777, 'lng': 78.0999},
+  //       'hubId': "fet",
+  //       'user': {'lat': 29.777, 'lng': 78.0999}
+  //     });
+  //   } catch (e) {
+  //     print(e);
   //   }
-  //   return status;
   // }
-  void test() async {
-    FirebaseFirestore.instance.collection('dboys').doc('8828767828').update({
-      "orders": [
-        {
-          "accepted": true,
-          "orderId": "2803256733742-69299",
-          "Restaurantuid": "67d001580d2f2917e8ff2bf4",
-          "cookingDescription": "No request",
-          "drivertip": 0,
-          "couponcode": "no code",
-          "date": "2025-03-28T12:55:21.406Z",
-          "time": "12:55 PM",
-          "paymentMethod": "Paid online",
-          "totalCost": 217.07,
-          "gst": 7.7,
-          "itemAmount": 170,
-          "deliveryCharge": 14.91,
-          "convinenceFee": 12.67,
-          "orderByid": "67e64892023949df359da8c8",
-          "orderByName": "Gaurav",
-          "status": "Pending",
-          "deliveryAddress": "hdkbdd, bdha, bdha ,bdha",
-          "items": [
-            {
-              "itemId": "67d0015Schezwan Noodles",
-              "itemName": "Schezwan Noodles",
-              "itemQuantity": 1,
-              "unitCost": 170,
-              "_id": "67e64eee924b660d336ac80f"
-            }
-          ],
-          "timetoprepare": "2025-03-28 13:09:27.328652",
-          "ordertype": "Delivery",
-          "billingDetail": {
-            "surge": 0,
-            "delivery_boy_wallet_cash": 4.41,
-            "shortValueOrder": 11.79,
-            "gst": 7.7,
-            "total_delivery_boy_earning": 35.67,
-            "dov": 10,
-            "dDist": 4.91,
-            "nukkad_earning": 131.22,
-            "usable_wallet_cash": 15.93,
-            "customer_wallet_cash_earned": 0,
-            "nukkad_wallet_cash": 10.86,
-            "delivery_fee": 14.91,
-            "total": 217.07,
-            "nukkadfoods_comission": 38.78,
-            "expectedPrep": "2025-03-28T13:09:27.323239",
-            "handling_charges": 6.72,
-            "delivery_boy_earning": 31.26,
-            "longDistanceCharge": 0,
-            "packing_charges": 5.95,
-            "order_value": 170,
-            "lateDelivery": true
-          },
-        }
-      ]
-    });
-  }
 }

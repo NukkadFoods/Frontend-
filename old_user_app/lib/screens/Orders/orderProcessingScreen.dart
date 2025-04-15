@@ -132,7 +132,7 @@ class OrderProcessingScreenState extends State<OrderProcessingScreen> {
                 'order': map,
                 "restaurant": {'lat': nukkad.latitude, 'lng': nukkad.longitude},
                 'hubId': nukkad.hubId,
-                'user': {'lat': 29.777, 'lng': 78.0999}
+                'user': {'lat': userlat!, 'lng': userlong!}
               });
             } catch (e) {
               print(e);

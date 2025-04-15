@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -84,11 +85,37 @@ class NotificationService {
     if (uid != null) {
       FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.update(
-            FirebaseFirestore.instance
-                .collection('fcmTokens')
-                .doc('driver'),
+            FirebaseFirestore.instance.collection('fcmTokens').doc('driver'),
             {uid: token});
       });
+    }
+  }
+
+  static Future<void> sendNotification({
+    required String toUid,
+    required String toApp,
+    String? title,
+    String? body,
+    Map? data,
+  }) async {
+    try {
+      final sendNotification =
+          FirebaseFunctions.instance.httpsCallable('sendNotification');
+      final result = await sendNotification.call({
+        "uid": toUid,
+        "toApp": toApp,
+        "title": title,
+        "body": body,
+        "data": data ?? {},
+        "channel": "orders"
+      });
+      if (kDebugMode) {
+        print(result.data);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 }

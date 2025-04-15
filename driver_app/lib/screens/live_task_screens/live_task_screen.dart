@@ -37,7 +37,7 @@ class LiveTaskScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       // lazy:false,
-      create: (context) => LiveTaskProvider(orderData),
+      create: (context) => LiveTaskProvider(orderData,userPosition),
       builder: (context, child) => Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -535,6 +535,7 @@ class DeliveryDetails extends StatelessWidget {
         ),
         ElevatedButton(
             onPressed: () {
+              context.read<LiveTaskProvider>().sendReachedNotification();
               Navigator.of(context).push(transitionToNextScreen(DeliveryScreen(
                 billingData: billingData,
                 orderData: orderData,

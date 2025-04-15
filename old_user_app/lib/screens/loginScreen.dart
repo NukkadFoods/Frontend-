@@ -318,7 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'sign in or sign up',
+                      'Sign in or Sign up',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.grey,

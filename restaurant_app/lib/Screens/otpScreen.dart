@@ -42,7 +42,6 @@ class _OTPScreenState extends State<OTPScreen> {
   void initState() {
     userNumber = widget.userNumber;
     otp = widget.otp;
-    // int widget.option = widget.widget.option;
     if (widget.userNumber == '+918828767828' ||
         widget.userNumber == '8828767828') {
       enteredpin = otp;
