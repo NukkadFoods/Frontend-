@@ -65,8 +65,8 @@ class LiveTaskProvider extends ChangeNotifier {
       if (acceptedByRestaurant != true) {
         acceptedByRestaurant = snapshot.get('acceptedByRestaurant');
       }
+      pickedUp = snapshot.data()!['pickedup'] ?? false;
       unreadByDriver = snapshot.data()!['unreadByDriver'] ?? 0;
-      stream.cancel();
       notifyListeners();
     });
   }

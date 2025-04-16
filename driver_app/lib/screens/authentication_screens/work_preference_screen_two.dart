@@ -181,7 +181,7 @@ class _WorkPreferenceScreenTwoState extends State<WorkPreferenceScreenTwo> {
           FirebaseFirestore.instance
               .collection('dboys')
               .doc(contact!)
-              .set({'isBusy': false, 'status': false, 'orders': []});
+              .set({'isBusy': false, 'status': false, 'orders': {}});
           WalletController.createWallet(contact!, '$firstName $lastName')
               .then((uid) {
             updateInHub(uid: uid, oldHub: locationName!, newHub: locationName);

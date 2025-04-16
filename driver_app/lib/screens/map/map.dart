@@ -19,13 +19,15 @@ class MapWithOrderScreen extends StatelessWidget {
       required this.userPosition,
       required this.billingData,
       required this.unassigned,
-      this.onDeclineUnassigned});
+      this.onDeclineUnassigned,
+      this.onAcceptedUnassigned});
   final OrderData orderData;
   final Restaurant restaurant;
   final LatLng userPosition;
   final Map billingData;
   final bool unassigned;
   final VoidCallback? onDeclineUnassigned;
+  final VoidCallback? onAcceptedUnassigned;
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +101,18 @@ class MapWithOrderScreen extends StatelessWidget {
                           color: Colors.white, fontWeight: FontWeight.bold),
                     )),
                 ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (unassigned) {
-                        OrderController.acceptUnassignedOrder(orderData);
+                        final result =
+                            await OrderController.acceptUnassignedOrder(
+                                orderData);
+                        if (!result) {
+                          showUnavailableDialog(context);
+                          onAcceptedUnassigned!();
+                          Navigator.of(context).pop();
+                          return;
+                        }
+                        onAcceptedUnassigned!();
                       } else {
                         OrderController.acceptOrder(orderData);
                       }
@@ -133,5 +144,17 @@ class MapWithOrderScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void showUnavailableDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => Dialog(
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                    "Sorry, the following order was accepted by other delivery person."),
+              ),
+            ));
   }
 }

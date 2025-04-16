@@ -10,7 +10,6 @@ import 'package:driver_app/widgets/common/transition_to_next_screen.dart';
 import 'package:driver_app/widgets/constants/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-// import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../location_broadcast.dart';
@@ -46,22 +45,8 @@ class OrderController {
   }
 
   static void acceptOrder(OrderData orderData) async {
-    final orders = await streamRef.get();
-    for (var order in orders.get('orders')) {
-      if (order['orderId'] == orderData.orderId) {
-        streamRef.update({
-          'orders': FieldValue.arrayRemove([order])
-        }).onError((e, _) {
-          log(e.toString());
-        });
-        break;
-      }
-    }
-    orderData.accepted = true;
-    db.collection('dboys').doc(phoneNumber).update({
-      'isBusy': true,
-      'orders': FieldValue.arrayUnion([orderData.toJson()])
-    }).onError((e, _) {
+    streamRef
+        .update({'orders.${orderData.orderId}.accepted': true}).onError((e, _) {
       log(e.toString());
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -75,47 +60,24 @@ class OrderController {
   }
 
   static void declineOrder(OrderData orderData) async {
-    final orders = await streamRef.get();
-    Map? orderJson;
-    for (var order in orders.get('orders')) {
-      if (order['orderId'] == orderData.orderId) {
-        orderJson = order;
-        streamRef.update({
-          'orders': FieldValue.arrayRemove([order])
-        }).onError((e, _) {
-          log(e.toString());
-        });
-        break;
-      }
-    }
-    // orderData.accepted = false;
-    if (orderJson != null) {
-      orderJson['accepted'] = false;
-      db.collection('dboys').doc(phoneNumber).update({
-        'isBusy': true,
-        'orders': FieldValue.arrayUnion([orderJson]),
-        // 'declined': FieldValue.arrayUnion([orderData.orderId])
-      }).onError((e, _) {
-        log(e.toString());
-      });
-    }
+    streamRef.update({'orders.${orderData.orderId}.accepted': false}).onError(
+        (e, _) {
+      log(e.toString());
+    });
   }
 
   static Future<bool> acceptUnassignedOrder(OrderData orderData) async {
     final result = await db.runTransaction((transaction) async {
-      final List orders =
+      final Map orders =
           (await transaction.get(db.collection('hubs').doc(orderData.hubId!)))
                   .data()!['unassigned'] ??
-              [];
-      final temp =
-          orders.where((order) => order['orderId'] == orderData.orderId);
-      if (temp.isEmpty) {
+              {};
+      if (orders[orderData.orderId] == null) {
         //show error dialog
         return false;
       } else {
-        transaction.update(db.collection('hubs').doc(orderData.hubId!), {
-          'unassigned': FieldValue.arrayRemove([temp.first])
-        });
+        transaction.update(db.collection('hubs').doc(orderData.hubId!),
+            {'unassigned.${orderData.orderId!}': FieldValue.delete()});
         return true;
       }
     });
@@ -126,10 +88,8 @@ class OrderController {
 
     orderData.accepted = true;
     db.runTransaction((transaction) async {
-      transaction.update(db.collection('dboys').doc(phoneNumber), {
-        'isBusy': true,
-        'orders': FieldValue.arrayUnion([orderData.toJson()])
-      });
+      transaction.update(db.collection('dboys').doc(phoneNumber),
+          {'isBusy': true, 'orders.${orderData.orderId}': orderData.toJson()});
       SharedPreferences prefs = await SharedPreferences.getInstance();
       transaction.update(db.collection('tracking').doc(orderData.orderId!),
           {'dBoyId': prefs.getString('uid')!});
@@ -163,24 +123,14 @@ class OrderController {
 
   static Future<bool> orderDelivered(OrderData orderData) async {
     await db.runTransaction((transaction) async {
-      final orders =
-          (await transaction.get(db.collection('dboys').doc(phoneNumber)))
-              .data()!['orders'];
-      final orderIterable =
-          orders.where((order) => order['orderId'] == orderData.orderId);
-      if (orderIterable.isNotEmpty) {
-        final order = orderIterable.first;
-        transaction.update(db.collection('dboys').doc(phoneNumber), {
-          "orders": FieldValue.arrayRemove([order])
-        });
-      }
+      transaction.update(db.collection('dboys').doc(phoneNumber),
+          {"orders.${orderData.orderId}": FieldValue.delete()});
     });
 
-    final orders = (await db.collection('dboys').doc(phoneNumber).get())
-        .get('orders') as List;
+    final orders =
+        (await db.collection('dboys').doc(phoneNumber).get()).get('orders');
 
-    final result =
-        orders.where((order) => order['orderId'] == orderData.orderId).isEmpty;
+    final result = orders[orderData.orderId!] == null;
 
     if (result) {
       location.stop();

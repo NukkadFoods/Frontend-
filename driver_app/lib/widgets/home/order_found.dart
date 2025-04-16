@@ -64,6 +64,7 @@ class OrderFound extends StatelessWidget {
                             userPosition: value.userPosition!,
                             unassigned: unassigned,
                             onDeclineUnassigned: onDeclineUnassigned,
+                            onAcceptedUnassigned: onAcceptedUnassigned,
                           )));
                         },
                         child: Row(

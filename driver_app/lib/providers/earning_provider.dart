@@ -25,7 +25,7 @@ class EarningProvider extends ChangeNotifier {
     try {
       final Map response = await EarningsController.getEarnings(uid: userid);
       if (response.containsKey("earnings")) {
-        earnings = response['earnings']['earnings'];
+        earnings = response['earnings']['earnings'].reversed.toList();
         if (showAll) {
           displayedEarnings.addAll(earnings);
         } else {

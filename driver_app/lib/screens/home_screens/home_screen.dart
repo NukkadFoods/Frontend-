@@ -45,12 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
     unassignedOrders.clear();
     final db = FirebaseFirestore.instance;
     for (var hub in DutyController.myHubs) {
-      final rawOrderData =
+      final Map rawOrderData =
           ((await db.collection('hubs').doc(hub['hubId']).get())
                   .data()!['unassigned'] ??
-              []);
-      for (var order in rawOrderData) {
-        final orderData = OrderData.fromJson(order);
+              {});
+      for (var order in rawOrderData.entries) {
+        final orderData = OrderData.fromJson(order.value);
         orderData.hubId = hub['hubId'];
         unassignedOrders.add(orderData);
       }
@@ -144,11 +144,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   OrderController.setStatus();
                   List<OrderData> orders = [];
                   if (snapshot.hasData) {
-                    for (Map<String, dynamic> item
-                        in snapshot.data!.data()!['orders']) {
-                      if (item['accepted'] == null) {
-                        orders.add(OrderData.fromJson(item));
-                      } else if (item['accepted'] == true) {
+                    for (MapEntry item
+                        in snapshot.data!.data()!['orders'].entries) {
+                      if (item.value['accepted'] == null) {
+                        orders.add(OrderData.fromJson(item.value));
+                      } else if (item.value['accepted'] == true) {
                         Toast.showToast(
                             message:
                                 "You already have an active order. Please check ongoing orders.");

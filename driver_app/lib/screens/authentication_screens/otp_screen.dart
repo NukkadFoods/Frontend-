@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_app/controller/toast.dart';
 import 'package:driver_app/screens/authentication_screens/get_started_screen.dart';
 import 'package:driver_app/screens/authentication_screens/verification_screen.dart';
@@ -68,7 +68,7 @@ class _OtpScreenState extends State<OtpScreen> {
           email: '$phoneNumber@gmail.com', password: phoneNumber);
       _auth.signInWithEmailAndPassword(
           email: '$phoneNumber@gmail.com', password: phoneNumber);
-      createDeliveryService(phoneNumber);
+      // createDeliveryService(phoneNumber);
       print('User created on firebase');
     } catch (e) {
       print('Error while creating account of firebase: $e');
@@ -77,12 +77,12 @@ class _OtpScreenState extends State<OtpScreen> {
     await prefs.setString('firebase', phoneNumber);
   }
 
-  void createDeliveryService(String number) {
-    FirebaseFirestore.instance
-        .collection('dboys')
-        .doc(number)
-        .set({'isBusy': false, 'status': false, 'orders': []});
-  }
+  // void createDeliveryService(String number) {
+  //   FirebaseFirestore.instance
+  //       .collection('dboys')
+  //       .doc(number)
+  //       .set({'isBusy': false, 'status': false, 'orders': {}});
+  // }
 
   void _verifyOtp() async {
     String enteredOtp = controller1.text +

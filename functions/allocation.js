@@ -33,11 +33,9 @@ async function allocateOrder(order, restaurant, hubId, user) {
             }
         }
         notify(dboysWithPriority[i].uid, "New Order Received", "", {}, "orders", "driver");
-        await db.collection('dboys').doc(dboysWithPriority[i].id).update(
-            {
-                "orders": FieldValue.arrayUnion(order)
-            }
-        );
+        body = {};
+        body[`orders.${order.orderId}`] = order;
+        await db.collection('dboys').doc(dboysWithPriority[i].id).update(body);
         let accepted = await waitforResult(dboysWithPriority[i].id, order);
         if (accepted === true) {
             let dboy = dboysWithPriority[i];
@@ -48,12 +46,10 @@ async function allocateOrder(order, restaurant, hubId, user) {
             orderAssigned = true;
             break;
         } else {
-            order.accepted = accepted;
-            await db.collection('dboys').doc(dboysWithPriority[i].id).update(
-                {
-                    "orders": FieldValue.arrayRemove(order)
-                }
-            );
+            // order.accepted = accepted;
+            body = {};
+            body[`orders.${order.orderId}`] = FieldValue.delete();
+            await db.collection('dboys').doc(dboysWithPriority[i].id).update(body);
         }
     }
     if (orderAssigned === false) {
@@ -71,15 +67,9 @@ async function allocateOrder(order, restaurant, hubId, user) {
             });
             sendBatchNotification(data.drivers);
         }
-        if (data.unassigned === undefined) {
-            db.collection('hubs').doc(hubId).update({
-                'unassigned': FieldValue.arrayUnion(order)
-            });
-        } else if (Array.isArray(data.unassigned) && data.unassigned.filter((value) => value['orderId'] === order['orderId']).length === 0) {
-            db.collection('hubs').doc(hubId).update({
-                'unassigned': FieldValue.arrayUnion(order)
-            });
-        }
+        body = {};
+        body[`unassigned.${order.orderId}`] = order;
+        db.collection('hubs').doc(hubId).update(body);
     }
 }
 
@@ -118,17 +108,10 @@ function waitforResult(dboyId, order) {
         try {
             const unsubscribe = ref.onSnapshot((docSnapshot) => {
                 const data = docSnapshot.data();
-                if (Array.isArray(data.orders)) {
-                    for (const item of data.orders) {
-                        if (item.orderId === order.orderId) {
-                            clearTimeout(timeoutId);
-                            if (item.accepted !== null) {
-                                resolve(item.accepted);
-                                unsubscribe();
-                                return;
-                            }
-                        }
-                    }
+                if (data.orders[order.orderId].accepted !== null) {
+                    resolve(data.orders[order.orderId].accepted);
+                    unsubscribe();
+                    return;
                 }
             });
         } catch (error) {

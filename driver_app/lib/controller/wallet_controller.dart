@@ -108,8 +108,11 @@ class WalletController {
         wallet = Wallet.fromJson(jsonDecode(response.body)['wallet']);
         return true;
       } else {
-        print(response.statusCode);
-        print(response.body);
+        if (kDebugMode) {
+          print(response.statusCode);
+          print(response.body);
+          print("rider: $uid");
+        }
         return false;
       }
     } catch (e) {
@@ -135,8 +138,11 @@ class WalletController {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print(response.statusCode);
-        print(response.body);
+        if (kDebugMode) {
+          print(response.statusCode);
+          print(response.body);
+          print("restaurant: $restaurantuid");
+        }
         return false;
       }
     } catch (e) {
@@ -162,8 +168,11 @@ class WalletController {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print(response.statusCode);
-        print(response.body);
+        if (kDebugMode) {
+          print(response.statusCode);
+          print(response.body);
+          print("user: $restaurantuid");
+        }
         return false;
       }
     } catch (e) {

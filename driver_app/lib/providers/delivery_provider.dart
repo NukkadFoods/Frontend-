@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:driver_app/controller/earnings/earnings_controller.dart';
 import 'package:driver_app/controller/notification.dart';
@@ -102,8 +101,17 @@ class DeliveryProvider extends ChangeNotifier {
                       .collection('constants')
                       .doc('streakRecord'),
                   {orderData.orderByid!: orderData.date!.substring(0, 10)});
-              //Sending notification to restaurant
-              sendNotifications(orderData);
+              //Sending notification to user for foodie reward
+              NotificationService.sendNotification(
+                toUid: orderData.orderByid!,
+                toApp: 'user',
+                title: "Yay! Foodie Reward Received",
+                body:
+                    "Foodie Reward of ₹ ${orderData.billingDetail!['foodieReward']} has been credited to wallet!",
+                data: {
+                  "orderId": orderData.orderId,
+                },
+              );
             }
             transaction.update(
                 FirebaseFirestore.instance
@@ -111,7 +119,7 @@ class DeliveryProvider extends ChangeNotifier {
                     .doc(orderData.orderId!),
                 {"status": "Delivered"});
           });
-
+          await sendNotifications(orderData);
           Navigator.of(context).pushReplacement(transitionToNextScreen(
               DeliveryCompletedScreen(
                   amount: billingData['lateDelivery'] == true
@@ -272,17 +280,6 @@ class DeliveryProvider extends ChangeNotifier {
   }
 
   Future<void> sendNotifications(OrderData orderData) async {
-    NotificationService.sendNotification(
-      toUid: orderData.orderByid!,
-      toApp: 'user',
-      title: "Yay! Foodie Reward Received",
-      body:
-          "Foodie Reward of ₹ ${orderData.billingDetail!['foodieReward']} has been credited to wallet!",
-      data: {
-        "orderId": orderData.orderId,
-      },
-    );
-
     NotificationService.sendNotification(
         toUid: orderData.restaurantuid!, toApp: "restaurant");
     NotificationService.sendNotification(
