@@ -176,9 +176,9 @@ class OngoingOrders extends StatelessWidget {
         OrderController.setStatus();
         List<OrderData> orders = [];
         if (snapshot.hasData) {
-          for (Map<String, dynamic> item in snapshot.data!.data()!['orders']) {
-            if (item['accepted'] == true) {
-              orders.add(OrderData.fromJson(item));
+          for (MapEntry item in snapshot.data!.data()!['orders'].entries) {
+            if (item.value['accepted'] == true) {
+              orders.add(OrderData.fromJson(item.value));
             }
           }
         }

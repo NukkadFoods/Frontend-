@@ -618,6 +618,7 @@ class _CartScreenState extends State<CartScreen> {
                         discount: discount,
                         isDelivery: isDelivery, // Ensure cartList is not null
                         deliveryInstruction: deliveryInstructions,
+                        hubId: widget.restaurant.hubId ?? "",
                       ),
                     ),
                   ),

@@ -58,7 +58,9 @@ class _NetworkImageWidgetState extends State<NetworkImageWidget> {
       fit: BoxFit.cover,
       placeholder: (context, url) => _buildError(),
       errorWidget: (context, url, error) {
-        getFirebaseUrl();
+        if (url.isNotEmpty) {
+          getFirebaseUrl();
+        }
         return _buildError();
       },
     );

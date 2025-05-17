@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,7 +43,8 @@ class OrderStateSelector extends StatefulWidget {
       required this.walletUsed,
       required this.prepTime,
       required this.walletAmount,
-      this.deliveryInstruction});
+      this.deliveryInstruction,
+      required this.hubId});
   final BuildContext context;
   final DateTime selectedDate;
   final TimeOfDay selectedTime;
@@ -64,6 +66,7 @@ class OrderStateSelector extends StatefulWidget {
   final double walletAmount;
   final String? deliveryInstruction;
   final Function prepTime;
+  final String hubId;
   @override
   _OrderStateSelectorState createState() => _OrderStateSelectorState();
 }
@@ -74,6 +77,7 @@ class _OrderStateSelectorState extends State<OrderStateSelector> {
   String? address2;
   String _deliveryAddress = '';
   int selectedMethod = 2; //change value to -1 to allow cod payments
+  bool driversAvailable = false;
   final PaymentTypeController paymentTypeController = PaymentTypeController();
   @override
   void initState() {
@@ -83,6 +87,16 @@ class _OrderStateSelectorState extends State<OrderStateSelector> {
       selectedMethod = paymentTypeController.selectedPaymentMethod.value;
       print("Selected Payment Method: $selectedMethod");
     });
+  }
+
+  checkDriversAvailability() async {
+    driversAvailable = ((await FirebaseFirestore.instance
+                    .collection('hubs')
+                    .doc(widget.hubId)
+                    .get())
+                .get('queue') ??
+            [])
+        .isNotEmpty;
   }
 
   // Function to get the selected address type and details from SharedPreferences
@@ -112,6 +126,14 @@ class _OrderStateSelectorState extends State<OrderStateSelector> {
   }
 
   void orderNow() async {
+    //Check for drivers availability
+    if (widget.isDelivery && !driversAvailable) {
+      final proceed = await showNoDriversAvailableDialog();
+      if (proceed != true) {
+        return;
+      }
+    }
+
     getAddressSelected();
 
     // Check if payment type is selected
@@ -345,6 +367,21 @@ class _OrderStateSelectorState extends State<OrderStateSelector> {
         ),
       ),
     );
+  }
+
+  Future showNoDriversAvailableDialog() async {
+    return await showDialog(
+        context: context,
+        builder: (context) => Dialog(
+              child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    const Text(
+                      "Our Delivery Partners are currently ocuupied!\nYou can place a preorder with a time limit, if none of our partners will be available within this time limit the order will get cancelled and refund will be initiated.",
+                      textAlign: TextAlign.center,
+                    )
+                  ])),
+            ));
   }
 
   // void _showScheduleOrderDialog(
