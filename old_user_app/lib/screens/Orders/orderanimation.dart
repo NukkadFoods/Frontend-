@@ -58,7 +58,8 @@ class _OrderAnimationState extends State<OrderAnimation> {
     await prefs.remove('estimatedtime');
     if (await Vibration.hasVibrator()) {
       Vibration.vibrate(duration: 1000);
-      await getres();
+     
+    } await getres();
       Future.delayed(const Duration(seconds: 4), () async {
         Navigator.of(context).pushReplacement(
           transitionToNextScreen(OrderTrackingScreen(
@@ -73,7 +74,6 @@ class _OrderAnimationState extends State<OrderAnimation> {
           )),
         );
       }); // Vibrate for 500ms
-    }
   }
 
   @override

@@ -77,7 +77,7 @@ class _OrderStateSelectorState extends State<OrderStateSelector> {
   String? address2;
   String _deliveryAddress = '';
   int selectedMethod = 2; //change value to -1 to allow cod payments
-  bool driversAvailable = false;
+  bool driversAvailable = true;
   final PaymentTypeController paymentTypeController = PaymentTypeController();
   @override
   void initState() {
@@ -89,15 +89,15 @@ class _OrderStateSelectorState extends State<OrderStateSelector> {
     });
   }
 
-  checkDriversAvailability() async {
-    driversAvailable = ((await FirebaseFirestore.instance
-                    .collection('hubs')
-                    .doc(widget.hubId)
-                    .get())
-                .get('queue') ??
-            [])
-        .isNotEmpty;
-  }
+  // checkDriversAvailability() async {
+  //   driversAvailable = ((await FirebaseFirestore.instance
+  //                   .collection('hubs')
+  //                   .doc(widget.hubId)
+  //                   .get())
+  //               .get('queue') ??
+  //           [])
+  //       .isNotEmpty;
+  // }
 
   // Function to get the selected address type and details from SharedPreferences
   Future<void> getAddressSelected() async {
