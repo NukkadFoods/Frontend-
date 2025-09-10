@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBxPQ4tRDb5YUqdx2MiqFg9Dx2AzZ0cuuA',
-    appId: '1:170641463923:android:41cf2b738397d138dd2806',
+    appId: '1:170641463923:android:d9fbf32d5927d4d6dd2806',
     messagingSenderId: '170641463923',
     projectId: 'nukkad-foods',
     storageBucket: 'nukkad-foods.appspot.com',
@@ -66,10 +66,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDqOYddESFjU90yvryknDRu7AqpQXoUnXE',
-    appId: '1:170641463923:ios:b557d753c1171ae8dd2806',
+    appId: '1:170641463923:ios:657d22e7afd7a3addd2806',
     messagingSenderId: '170641463923',
     projectId: 'nukkad-foods',
     storageBucket: 'nukkad-foods.appspot.com',
-    iosBundleId: 'com.example.driverApp',
+    iosBundleId: 'com.nukkadfoods.driver-app',
   );
 }
