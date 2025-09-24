@@ -10,8 +10,15 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    FirebaseApp.configure()
+    // Initialize Firebase first
+    if FirebaseApp.app() == nil {
+      FirebaseApp.configure()
+    }
+    
+    // Configure Google Maps
     GMSServices.provideAPIKey("AIzaSyCsZ1wSI0CdaLU35oH4l4dhQrz7TjBSYTw")
+    
+    // Register Flutter plugins
     GeneratedPluginRegistrant.register(with: self)
     
     // Register for remote notifications
@@ -21,9 +28,9 @@ import GoogleMaps
       UNUserNotificationCenter.current().requestAuthorization(
         options: authOptions,
         completionHandler: { granted, error in
-          print("🔔 [RESTAURANT] Notification permission granted: \(granted)")
+          print("🔔 Restaurant App: Notification permission granted: \(granted)")
           if let error = error {
-            print("❌ [RESTAURANT] Notification permission error: \(error.localizedDescription)")
+            print("❌ Restaurant App: Notification permission error: \(error.localizedDescription)")
           }
         }
       )

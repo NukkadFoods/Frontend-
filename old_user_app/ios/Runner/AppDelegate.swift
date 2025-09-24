@@ -1,6 +1,5 @@
 import Flutter
 import UIKit
-import FirebaseCore
 import UserNotifications
 import GoogleMaps
 
@@ -10,8 +9,10 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    FirebaseApp.configure()
+    // Configure Google Maps
     GMSServices.provideAPIKey("AIzaSyCsZ1wSI0CdaLU35oH4l4dhQrz7TjBSYTw")
+    
+    // Register Flutter plugins
     GeneratedPluginRegistrant.register(with: self)
     
     // Register for remote notifications

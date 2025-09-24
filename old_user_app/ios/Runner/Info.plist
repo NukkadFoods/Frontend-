@@ -4,6 +4,10 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIStatusBarHidden</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -29,7 +33,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Images from camera will be used for profile and support purpose</string>
 	<key>NSFileProviderDomainUsageDescription</key>
-	<string></string>
+	<string>This app uses file provider capabilities to manage and access user documents and files.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your location is used to provide navigation services and location updates even when the app is in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>

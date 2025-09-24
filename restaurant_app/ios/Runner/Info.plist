@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Capture Image to set Profile photo and set images of dishes</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>This app uses file provider capabilities to manage and access user documents and files.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>To set Location of your restaurant</string>
 	<key>NSLocationAlwaysUsageDescription</key>

@@ -91,7 +91,7 @@ class _LiveordertrackingState extends State<Liveordertracking> {
           return GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _userLocation!,
-              zoom: 6,
+              zoom: 15.0,
             ),
             onMapCreated: (GoogleMapController controller) {
               mapController = controller;
@@ -99,6 +99,13 @@ class _LiveordertrackingState extends State<Liveordertracking> {
             },
             markers: _markers,
             polylines: _polylines,
+            mapType: MapType.normal,
+            myLocationEnabled: false,
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+            mapToolbarEnabled: false,
+            compassEnabled: true,
+            trafficEnabled: false,
           );
         },
       ),
